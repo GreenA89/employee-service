@@ -29,6 +29,11 @@ in the cloud, observability and monitoring would be set up in the cloud environm
 by polling the healthcheck endpoint regularly. In the event of application downtime, this endpoint would return a non 200 
 status code and alert relevant cloud infrastructure staff or the appropriate owning software engineer.
 
+For extra assurance of the unique entry of the email address and id, as requested by the User Story, the email has been 
+indexed in the model using the spring / mongo integration `@indexed(unique=true)` annotation, ensuring that the database 
+itself will also enforce the unique email requirement in the event that duplicate requests are sent to the endpoint before
+the java code can validate an existing entry
+
 ## Next Steps
 
 If I had more time available my next steps in building this application
