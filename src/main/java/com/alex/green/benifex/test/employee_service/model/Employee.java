@@ -1,5 +1,9 @@
 package com.alex.green.benifex.test.employee_service.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,12 +14,22 @@ public class Employee {
 
 	@Id
 	private String employeeNo;
+
+	@NotBlank
 	private String title;
+	@NotBlank
 	private String firstName;
+	@NotBlank
 	private String surname;
+	@NotNull
+	@Past
 	private LocalDate dob;
+	@NotBlank
 	private String gender;
+	@NotBlank
+	@Email
 	private String email;
+	@NotBlank
 	private String address;
 
 	public String getEmployeeNo() {

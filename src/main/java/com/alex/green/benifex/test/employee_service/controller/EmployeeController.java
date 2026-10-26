@@ -2,6 +2,7 @@ package com.alex.green.benifex.test.employee_service.controller;
 
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class EmployeeController {
 	}
 
 	@PostMapping
-	public Employee createEmployee(@RequestBody Employee employee) {
+	public Employee createEmployee(@RequestBody @Valid Employee employee) {
 		LOG.info("/employee POST called with: {}", employee);
 		Employee createdEmployee = employeeService.createEmployee(employee);
 		return createdEmployee;
