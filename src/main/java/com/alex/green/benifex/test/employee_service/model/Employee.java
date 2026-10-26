@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -17,18 +18,25 @@ public class Employee {
 
 	@NotBlank
 	private String title;
+
 	@NotBlank
 	private String firstName;
+
 	@NotBlank
 	private String surname;
+
 	@NotNull
 	@Past
 	private LocalDate dob;
+
 	@NotBlank
 	private String gender;
+
 	@NotBlank
 	@Email
+	@Indexed(unique = true)
 	private String email;
+
 	@NotBlank
 	private String address;
 
