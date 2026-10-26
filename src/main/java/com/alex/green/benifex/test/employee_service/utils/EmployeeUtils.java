@@ -4,8 +4,10 @@ import java.util.UUID;
 
 public class EmployeeUtils {
 
+	private static final String EMPLOYEE_NUMBER_PREFIX =  "BENIFEX-EMP-";
+
 	public static String createEmployeeNumber() {
-		return "BENIFEX-EMP-" + UUID.randomUUID();
+		return EMPLOYEE_NUMBER_PREFIX + UUID.randomUUID();
 	}
 
 }
