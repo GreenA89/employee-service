@@ -3,7 +3,7 @@ package com.alex.green.benifex.test.employee_service.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Document(collection = "employees")
 public class Employee {
@@ -13,7 +13,7 @@ public class Employee {
 	private String title;
 	private String firstName;
 	private String surname;
-	private Date dob;
+	private LocalDate dob;
 	private String gender;
 	private String email;
 	private String address;
@@ -50,11 +50,11 @@ public class Employee {
 		this.surname = surname;
 	}
 
-	public Date getDob() {
+	public LocalDate getDob() {
 		return dob;
 	}
 
-	public void setDob(Date dob) {
+	public void setDob(LocalDate dob) {
 		this.dob = dob;
 	}
 
