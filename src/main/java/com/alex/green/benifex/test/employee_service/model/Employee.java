@@ -15,6 +15,7 @@ public class Employee {
 	private String surname;
 	private Date dob;
 	private String gender;
+	private String email;
 	private String address;
 
 }
