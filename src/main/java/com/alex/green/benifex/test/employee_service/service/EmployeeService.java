@@ -1,5 +1,7 @@
 package com.alex.green.benifex.test.employee_service.service;
 
+import com.alex.green.benifex.test.employee_service.exception.DuplicateEmailAddressException;
+import com.alex.green.benifex.test.employee_service.exception.EmployeeNotFoundException;
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.repository.EmployeeRepository;
 import org.slf4j.Logger;
@@ -7,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
+
+import static com.alex.green.benifex.test.employee_service.utils.EmployeeUtils.createEmployeeNumber;
 
 @Service
 public class EmployeeService {
@@ -24,24 +27,32 @@ public class EmployeeService {
 		String employeeNumber = createEmployeeNumber();
 		employee.setEmployeeNo(employeeNumber);
 
+		if (employeeRepository.existsByEmail(employee.getEmail())) {
+			LOG.warn("Attempted to create employee with duplicate email: {}", employee.getEmail());
+			throw new DuplicateEmailAddressException(employee.getEmail());
+		}
+
 		LOG.info("Creating employee with id: {}", employeeNumber);
 		return employeeRepository.save(employee);
 	}
 
-	public Employee findEmployeeByEmployeeNo(String employeeNo) throws Exception {
-		Employee foundEmployee = employeeRepository.findById(employeeNo).orElse(null);
-		if (foundEmployee == null) {
-			LOG.error("Employee with employeeNo {} not found", employeeNo);
-			throw new Exception("Employee with employeeNo " + employeeNo + " not found");
+	public Employee findEmployeeByEmployeeNo(String employeeNo) {
+		if (!employeeRepository.existsById(employeeNo)) {
+			LOG.warn("Employee with employeeNo {} not found", employeeNo);
+			throw new EmployeeNotFoundException(employeeNo);
 		}
-		return foundEmployee;
+		return employeeRepository.findById(employeeNo).orElse(null);
 	}
 
-	public List<Employee> findAllEmployees() throws Exception {
+	public List<Employee> findAllEmployees() {
 		return employeeRepository.findAll();
 	}
 
-	private String createEmployeeNumber() {
-		return "BENIFEX-EMP-" + UUID.randomUUID();
+	public void deleteEmployeeByEmployeeNo(String employeeNo) {
+		if (!employeeRepository.existsById(employeeNo)) {
+			LOG.warn("Employee with employeeNo {} not found", employeeNo);
+			throw new EmployeeNotFoundException(employeeNo);
+		}
+		employeeRepository.deleteById(employeeNo);
 	}
 }
