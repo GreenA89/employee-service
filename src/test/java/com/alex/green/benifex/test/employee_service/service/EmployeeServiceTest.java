@@ -1,10 +1,9 @@
-package com.alex.green.benifex.test.employee_service;
+package com.alex.green.benifex.test.employee_service.service;
 
 import com.alex.green.benifex.test.employee_service.exception.DuplicateEmailAddressException;
 import com.alex.green.benifex.test.employee_service.exception.EmployeeNotFoundException;
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.repository.EmployeeRepository;
-import com.alex.green.benifex.test.employee_service.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EmployeeServiceApplicationTests {
+class EmployeeServiceTests {
 
 	private static final String EMPLOYEE_NUMBER_PREFIX =  "BENIFEX-EMP-";
 
