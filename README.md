@@ -31,7 +31,7 @@ alternatively run the below command from the project root:
 ./gradlew bootRun
 ```
 Once the application is running, the api will be available at http://localhost:8080, you can test this by hitting
-the heathcheck endpoint at: http://localhost:8080/healtcheck
+`GET /healthcheck` endpoint at: http://localhost:8080/healtcheck
 
 ## Testing
 Unit tests can be ran either via your IDE directly in `EmployeeServiceTests`
