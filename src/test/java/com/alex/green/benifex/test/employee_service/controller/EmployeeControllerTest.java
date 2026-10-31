@@ -14,8 +14,10 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,50 @@ class EmployeeControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Test
+	void shouldReturnValidationErrorsWhenEmployeeIsContainsBlankOrNullValues() throws Exception {
+		Employee employee = generateEmployee();
+		employee.setFirstName("");
+		employee.setEmail("");
+		employee.setSurname("");
+		employee.setDob(null);
+		employee.setGender("");
+		employee.setTitle("");
+		employee.setAddress("");
+
+		mockMvc.perform(post("/employee")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(employee)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").exists())
+				.andExpect(jsonPath("$.message", containsString("firstName: must not be blank")))
+				.andExpect(jsonPath("$.message", containsString("email: must not be blank")))
+				.andExpect(jsonPath("$.message", containsString("surname: must not be blank")))
+				.andExpect(jsonPath("$.message", containsString("dob: must not be null")))
+				.andExpect(jsonPath("$.message", containsString("address: must not be blank")))
+				.andExpect(jsonPath("$.message", containsString("gender: must not be blank")))
+				.andExpect(jsonPath("$.message", containsString("title: must not be blank")));
+
+		verify(employeeService, never()).createEmployee(any(Employee.class));
+	}
+
+	@Test
+	void shouldReturnValidationErrorsWhenEmployeeIsContainsInvalidValues() throws Exception {
+		Employee employee = generateEmployee();
+		employee.setEmail("invalid");
+		employee.setDob(LocalDate.now());
+
+		mockMvc.perform(post("/employee")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(employee)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").exists())
+				.andExpect(jsonPath("$.message", containsString("email: must be a well-formed email address")))
+				.andExpect(jsonPath("$.message", containsString("dob: must be a past date")));
+
+		verify(employeeService, never()).createEmployee(any(Employee.class));
+	}
 
 	@Test
 	void findAllEmployees() throws Exception {
