@@ -77,7 +77,6 @@ class EmployeeServiceTests {
 		LocalDate dob = LocalDate.of(1989, 10, 16);
 
 		Employee employee = new Employee();
-		employee.setEmployeeNo(EMPLOYEE_NUMBER_PREFIX + "123");
 		employee.setAddress("123 Apple Street");
 		employee.setFirstName("Alex");
 		employee.setSurname("Green");
