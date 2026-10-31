@@ -14,7 +14,12 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.AssertionsKt.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +32,22 @@ class EmployeeServiceTests {
 
 	@InjectMocks
 	private EmployeeService employeeService;
+
+	@Test
+	void shouldSuccessfullyStoreEmployeeRecord() {
+		Employee newEmployee = generateEmployee();
+
+		when(employeeRepository.existsByEmail("alex.green@benifex.com")).thenReturn(false);
+		when(employeeRepository.save(any(Employee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		Employee savedEmployee = employeeService.createEmployee(generateEmployee());
+
+		assertNotNull(savedEmployee.getEmployeeNo());
+		assertTrue(savedEmployee.getEmployeeNo().startsWith(EMPLOYEE_NUMBER_PREFIX));
+
+		verify(employeeRepository, times(1)).existsByEmail(newEmployee.getEmail());
+		verify(employeeRepository, times(1)).save(savedEmployee);
+	}
 
 	@Test
 	void shouldThrowExceptionWhenCreatingEmployeeRecordWithExistingEmail() {
