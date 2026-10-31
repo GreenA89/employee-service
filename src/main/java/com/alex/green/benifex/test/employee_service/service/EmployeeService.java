@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 import static com.alex.green.benifex.test.employee_service.utils.EmployeeUtils.createEmployeeNumber;
 
@@ -27,7 +28,7 @@ public class EmployeeService {
 		String employeeNumber = createEmployeeNumber();
 		employee.setEmployeeNo(employeeNumber);
 
-		if (employeeRepository.existsByEmail(employee.getEmail())) {
+		if (employeeRepository.existsByEmail(employee.getEmail().toLowerCase(Locale.ROOT))) {
 			LOG.warn("Attempted to create employee with duplicate email: {}", employee.getEmail());
 			throw new DuplicateEmailAddressException(employee.getEmail());
 		}
