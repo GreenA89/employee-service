@@ -51,7 +51,7 @@ public class EmployeeController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public EmployeeResponse createEmployee(@RequestBody @Valid EmployeeRequest employee, HttpServletResponse response) {
-		LOG.info("/employee POST called with: {}", employee);
+		LOG.info("/employee POST called with: {}", employee.toString());
 		EmployeeResponse createdEmployee = employeeService.createEmployee(convert(employee));
 
 		URI location = ServletUriComponentsBuilder

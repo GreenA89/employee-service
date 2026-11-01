@@ -87,4 +87,18 @@ public class EmployeeRequest {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+
+	@Override
+	public String toString() {
+		return "Employee{" +
+				", title='" + title + '\'' +
+				", firstName='" + firstName + '\'' +
+				", surname='" + surname + '\'' +
+				", dob=" + dob +
+				", gender='" + gender + '\'' +
+				", email='" + email + '\'' +
+				", address='" + address + '\'' +
+				'}';
+	}
 }
