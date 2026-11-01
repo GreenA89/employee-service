@@ -1,6 +1,7 @@
 package com.alex.green.benifex.test.employee_service.controller;
 
-import com.alex.green.benifex.test.employee_service.model.Employee;
+import com.alex.green.benifex.test.employee_service.dto.request.EmployeeRequest;
+import com.alex.green.benifex.test.employee_service.dto.response.EmployeeResponse;
 import com.alex.green.benifex.test.employee_service.service.EmployeeService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import static com.alex.green.benifex.test.employee_service.utils.EmployeeConverter.convert;
+
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -34,22 +37,22 @@ public class EmployeeController {
 	}
 
 	@GetMapping
-	public List<Employee> findAllEmployees() {
+	public List<EmployeeResponse> findAllEmployees() {
 		LOG.info("/employee GET called");
 		return employeeService.findAllEmployees();
 	}
 
 	@GetMapping("/{employeeNo}")
-	public Employee findEmployee(@PathVariable String employeeNo) {
+	public EmployeeResponse findEmployee(@PathVariable String employeeNo) {
 		LOG.info("/employee/{employeeNo} GET called with: {}", employeeNo);
 		return employeeService.findEmployeeByEmployeeNo(employeeNo);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Employee createEmployee(@RequestBody @Valid Employee employee, HttpServletResponse response) {
+	public EmployeeResponse createEmployee(@RequestBody @Valid EmployeeRequest employee, HttpServletResponse response) {
 		LOG.info("/employee POST called with: {}", employee);
-		Employee createdEmployee = employeeService.createEmployee(employee);
+		EmployeeResponse createdEmployee = employeeService.createEmployee(convert(employee));
 
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
