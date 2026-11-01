@@ -9,7 +9,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.IndexInfo;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
+import java.util.Optional;
 
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,7 +39,82 @@ public class EmployeeRepositoryIntegrationTest extends AbstractIntegrationTestBa
 		Employee employeeWithDuplicateEmail = generateEmployee();
 		newEmployee.setEmployeeNo("BENIFEX-EMP-456");
 
+		// THEN a duplicate key exception is thrown
 		assertThrows(DuplicateKeyException.class, () -> employeeRepository.save(employeeWithDuplicateEmail));
+	}
+
+	@Test
+	void shouldPersistEmployeeRecordAndFindById() {
+		// GIVEN a new employee request
+		Employee newEmployee = generateEmployee();
+		newEmployee.setEmployeeNo("BENIFEX-EMP-123");
+
+		// WHEN the employee record is saved
+		employeeRepository.save(newEmployee);
+
+		// THEN the employee record is stored in the database persistence
+		Optional<Employee> optionalSavedEmployee = employeeRepository.findById("BENIFEX-EMP-123");
+		Employee savedEmployee = optionalSavedEmployee.orElse(null);
+
+		assertNotNull(savedEmployee);
+		assertEquals(savedEmployee.getEmployeeNo(), newEmployee.getEmployeeNo());
+	}
+
+	@Test
+	void shouldPersistEmployeeRecordAndFindByEmail() {
+		// GIVEN a new employee request
+		Employee newEmployee = generateEmployee();
+		newEmployee.setEmployeeNo("BENIFEX-EMP-123");
+
+		// WHEN the employee record is saved
+		employeeRepository.save(newEmployee);
+
+		// THEN the employee record is stored in the database persistence
+		Optional<Employee> optionalSavedEmployee = employeeRepository.findByEmail("alex.green@benifex.com");
+		Employee savedEmployee = optionalSavedEmployee.orElse(null);
+
+		assertNotNull(savedEmployee);
+		assertEquals(savedEmployee.getEmployeeNo(), newEmployee.getEmployeeNo());
+	}
+
+	@Test
+	void shouldReturnFullListOfSavedEmployees() {
+		// GIVEN two new employee requests
+		Employee newEmployeeOne = generateEmployee();
+		newEmployeeOne.setEmployeeNo("BENIFEX-EMP-123");
+
+		Employee newEmployeeTwo = generateEmployee();
+		newEmployeeTwo.setEmployeeNo("BENIFEX-EMP-345");
+		newEmployeeTwo.setEmail("alex.blue@benifex.com");
+
+		// WHEN the employee records are saved
+		employeeRepository.save(newEmployeeOne);
+		employeeRepository.save(newEmployeeTwo);
+
+		// THEN the employee record is stored in the database persistence
+		List<Employee> employeeList = employeeRepository.findAll();
+		assertEquals(2, employeeList.size());
+	}
+
+	@Test
+	void shouldDeleteEmployeeRecord() {
+		// GIVEN a new employee request
+		Employee newEmployee = generateEmployee();
+		newEmployee.setEmployeeNo("BENIFEX-EMP-123");
+
+		// AND the employee record is saved
+		employeeRepository.save(newEmployee);
+		Optional<Employee> optionalSavedEmployee = employeeRepository.findById("BENIFEX-EMP-123");
+		Employee savedEmployee = optionalSavedEmployee.orElse(newEmployee);
+		assertNotNull(savedEmployee);
+		assertEquals(savedEmployee.getEmployeeNo(), newEmployee.getEmployeeNo());
+
+		// WHEN the employee record is deleted
+		employeeRepository.deleteById("BENIFEX-EMP-123");
+
+		// THEN the employee record is no longer present in persistence
+		Optional<Employee> optionalDeletedEmployee = employeeRepository.findById("BENIFEX-EMP-123");
+		assertTrue(optionalDeletedEmployee.isEmpty());
 	}
 
 	@Test
