@@ -6,6 +6,7 @@ import com.alex.green.benifex.test.employee_service.dto.transfer.EmployeeTransfe
 import com.alex.green.benifex.test.employee_service.model.Employee;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class TestDataUtils {
 
@@ -21,6 +22,10 @@ public class TestDataUtils {
 		employee.setGender("Male");
 		employee.setTitle("Sir");
 		return employee;
+	}
+
+	public static List<EmployeeResponse> generateEmployeeResponseList() {
+		return List.of(generateEmployeeResponse());
 	}
 
 	public static EmployeeResponse generateEmployeeResponse() {

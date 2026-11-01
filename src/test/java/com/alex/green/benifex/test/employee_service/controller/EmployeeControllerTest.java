@@ -5,10 +5,6 @@ import com.alex.green.benifex.test.employee_service.dto.response.EmployeeRespons
 import com.alex.green.benifex.test.employee_service.dto.transfer.EmployeeTransferDTO;
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.service.EmployeeService;
-
-import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
-import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeRequest;
-import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -21,7 +17,10 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.alex.green.benifex.test.employee_service.utils.EmployeeConverter.convert;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeRequest;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeResponse;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeResponseList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,7 +93,7 @@ class EmployeeControllerTest {
 
 	@Test
 	void findAllEmployees() throws Exception {
-		List<EmployeeResponse> employees = convert(List.of(generateEmployee()));
+		List<EmployeeResponse> employees = generateEmployeeResponseList();
 		when(employeeService.findAllEmployees()).thenReturn(employees);
 
 		mockMvc.perform(get("/employee"))
@@ -113,7 +112,7 @@ class EmployeeControllerTest {
 
 	@Test
 	void findEmployee() throws Exception {
-		EmployeeResponse newEmployee = convert(generateEmployee());
+		EmployeeResponse newEmployee = generateEmployeeResponse();
 
 		when(employeeService.findEmployeeByEmployeeNo(newEmployee.getEmployeeNo())).thenReturn(newEmployee);
 
