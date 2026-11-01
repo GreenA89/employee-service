@@ -34,7 +34,7 @@ public class EmployeeService {
 		employee.setEmployeeNo(employeeNumber);
 
 		if (employeeRepository.existsByEmail(employee.getEmail().toLowerCase(Locale.ROOT))) {
-			LOG.warn("Attempted to create employee with duplicate email: {}", employee.getEmail());
+			LOG.info("Employee with email {} already exists", employee.getEmail());
 			throw new DuplicateEmailAddressException(employee.getEmail());
 		}
 
@@ -43,6 +43,7 @@ public class EmployeeService {
 		try {
 			savedEmployee = employeeRepository.save(convert(employee));
 		} catch (DuplicateKeyException e) {
+			LOG.info("Employee with email {} already exists", employee.getEmail());
 			throw new DuplicateEmailAddressException(employee.getEmail());
 		}
 
