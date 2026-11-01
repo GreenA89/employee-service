@@ -8,6 +8,7 @@ import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +34,19 @@ public class EmployeeService {
 		employee.setEmployeeNo(employeeNumber);
 
 		if (employeeRepository.existsByEmail(employee.getEmail().toLowerCase(Locale.ROOT))) {
-			LOG.warn("Attempted to create employee with duplicate email: {}", employee.getEmail());
+			LOG.info("Employee with email {} already exists", employee.getEmail());
 			throw new DuplicateEmailAddressException(employee.getEmail());
 		}
 
 		LOG.info("Creating employee with id: {}", employeeNumber);
-		Employee savedEmployee = employeeRepository.save(convert(employee));
+		Employee savedEmployee;
+		try {
+			savedEmployee = employeeRepository.save(convert(employee));
+		} catch (DuplicateKeyException e) {
+			LOG.info("Employee with email {} already exists", employee.getEmail());
+			throw new DuplicateEmailAddressException(employee.getEmail());
+		}
+
 		return convert(savedEmployee);
 	}
 
