@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeTransferDto;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.AssertionsKt.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,7 +70,7 @@ class EmployeeServiceTests {
 
 	@Test
 	void shouldThrowExceptionWhenDeletingEmployeeRecordWithNonExistingEmployeeNo() {
-		when(employeeRepository.existsById(anyString())).thenReturn(false);
+		doThrow(OptimisticLockingFailureException.class).when(employeeRepository).deleteById(anyString());
 
 		Exception e = assertThrows(EmployeeNotFoundException.class, () -> employeeService.deleteEmployeeByEmployeeNo("123"));
 		assertEquals("Employee not found with employee number: 123", e.getMessage());

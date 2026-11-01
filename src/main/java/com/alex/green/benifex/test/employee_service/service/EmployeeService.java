@@ -8,6 +8,7 @@ import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,10 +56,11 @@ public class EmployeeService {
 	}
 
 	public void deleteEmployeeByEmployeeNo(String employeeNo) {
-		if (!employeeRepository.existsById(employeeNo)) {
+		try {
+			employeeRepository.deleteById(employeeNo);
+		} catch (OptimisticLockingFailureException e) {
 			LOG.warn("Employee with employeeNo {} not found", employeeNo);
 			throw new EmployeeNotFoundException(employeeNo);
 		}
-		employeeRepository.deleteById(employeeNo);
 	}
 }
