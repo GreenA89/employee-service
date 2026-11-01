@@ -1,5 +1,7 @@
 package com.alex.green.benifex.test.employee_service.integration.employee;
 
+import com.alex.green.benifex.test.employee_service.dto.request.EmployeeRequest;
+import com.alex.green.benifex.test.employee_service.dto.response.EmployeeResponse;
 import com.alex.green.benifex.test.employee_service.integration.utils.AbstractIntegrationTestBase;
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +15,7 @@ import tools.jackson.databind.JsonNode;
 import java.time.LocalDate;
 
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,19 +25,19 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 	@Test
 	void shouldSuccessfullyStoreEmployee() {
 		// GIVEN a new employee request
-		Employee newEmployee = generateEmployee();
+		EmployeeRequest newEmployee = generateEmployeeRequest();
 
 		// WHEN the employee record is successfully created
-		ResponseEntity<@NotNull Employee> savedEmployeeResponse = restTemplate.postForEntity("/employee", newEmployee, Employee.class);
+		ResponseEntity<@NotNull EmployeeResponse> savedEmployeeResponse = restTemplate.postForEntity("/employee", newEmployee, EmployeeResponse.class);
 		assertNotNull(savedEmployeeResponse.getBody());
 		assertEquals(HttpStatus.CREATED, savedEmployeeResponse.getStatusCode());
 
 		// THEN an employee number has been generated
-		Employee savedEmployee = savedEmployeeResponse.getBody();
+		EmployeeResponse savedEmployee = savedEmployeeResponse.getBody();
 		assertNotNull(savedEmployee.getEmployeeNo());
 
 		// AND the persisted employee in the database can be retrieved with this generated employee number
-		ResponseEntity<@NotNull Employee> retrievedEmployeeResponse = restTemplate.getForEntity("/employee/{employeeNo}", Employee.class, savedEmployee.getEmployeeNo());
+		ResponseEntity<@NotNull EmployeeResponse> retrievedEmployeeResponse = restTemplate.getForEntity("/employee/{employeeNo}", EmployeeResponse.class, savedEmployee.getEmployeeNo());
 		assertNotNull(retrievedEmployeeResponse.getBody());
 		assertEquals(HttpStatus.OK, retrievedEmployeeResponse.getStatusCode());
 	}
@@ -43,11 +46,11 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 	@ValueSource(strings = { "alex.green@benifex.com", "ALEX.GREEN@BENIFEX.COM" })
 	void shouldNotStoreEmployeeRecordWithDuplicateEmailAddress(String duplicateEmailAddress) {
 		// GIVEN two new employee requests with the same email address
-		Employee newEmployeeOne = generateEmployee();
-		Employee newEmployeeTwo = generateEmployee();
+		EmployeeRequest newEmployeeOne = generateEmployeeRequest();
+		EmployeeRequest newEmployeeTwo = generateEmployeeRequest();
 
 		// WHEN the employee one record is successfully created
-		ResponseEntity<@NotNull Employee> savedEmployeeOneResponse = restTemplate.postForEntity("/employee", newEmployeeOne, Employee.class);
+		ResponseEntity<@NotNull EmployeeResponse> savedEmployeeOneResponse = restTemplate.postForEntity("/employee", newEmployeeOne, EmployeeResponse.class);
 		assertEquals(HttpStatus.CREATED, savedEmployeeOneResponse.getStatusCode());
 
 		// AND an attempt is made to create a record for employee two with a duplicate email address
@@ -63,7 +66,7 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 	@Test
 	void shouldNotStoreEmployeeWithInvalidFieldValue() {
 		// GIVEN a new employee request with an invalid email and invalid date of birth
-		Employee newEmployeeWithInvalidDetails = generateEmployee();
+		EmployeeRequest newEmployeeWithInvalidDetails = generateEmployeeRequest();
 		newEmployeeWithInvalidDetails.setEmail("invalidEmail");
 		newEmployeeWithInvalidDetails.setDob(LocalDate.now());
 
