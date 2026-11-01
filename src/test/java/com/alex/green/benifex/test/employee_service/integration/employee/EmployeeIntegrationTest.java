@@ -1,4 +1,4 @@
-package com.alex.green.benifex.test.employee_service.integration.persistence;
+package com.alex.green.benifex.test.employee_service.integration.employee;
 
 import com.alex.green.benifex.test.employee_service.integration.utils.AbstractIntegrationTestBase;
 import com.alex.green.benifex.test.employee_service.model.Employee;
@@ -12,6 +12,7 @@ import tools.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
 
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -74,19 +75,5 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 		JsonNode responseBody = objectMapper.readTree(savedEmployeeResponse.getBody());
 		assertTrue(responseBody.get("message").asString().contains("email: must be a well-formed email address"));
 		assertTrue(responseBody.get("message").asString().contains("dob: must be a past date"));
-	}
-
-	private Employee generateEmployee() {
-		LocalDate dob = LocalDate.of(1989, 10, 16);
-
-		Employee employee = new Employee();
-		employee.setAddress("123 Apple Street");
-		employee.setFirstName("Alex");
-		employee.setSurname("Green");
-		employee.setEmail("alex.green@benifex.com");
-		employee.setDob(dob);
-		employee.setGender("Male");
-		employee.setTitle("Sir");
-		return employee;
 	}
 }
