@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class Employee {
 
 	@Id
+	@NotNull
 	private String employeeNo;
 
 	@NotBlank

@@ -1,7 +1,14 @@
 package com.alex.green.benifex.test.employee_service.controller;
 
+import com.alex.green.benifex.test.employee_service.dto.request.EmployeeRequest;
+import com.alex.green.benifex.test.employee_service.dto.response.EmployeeResponse;
+import com.alex.green.benifex.test.employee_service.dto.transfer.EmployeeTransferDTO;
 import com.alex.green.benifex.test.employee_service.model.Employee;
 import com.alex.green.benifex.test.employee_service.service.EmployeeService;
+
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeRequest;
+import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -14,6 +21,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.alex.green.benifex.test.employee_service.utils.EmployeeConverter.convert;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +72,7 @@ class EmployeeControllerTest {
 				.andExpect(jsonPath("$.message", containsString("gender: must not be blank")))
 				.andExpect(jsonPath("$.message", containsString("title: must not be blank")));
 
-		verify(employeeService, never()).createEmployee(any(Employee.class));
+		verify(employeeService, never()).createEmployee(any(EmployeeTransferDTO.class));
 	}
 
 	@Test
@@ -81,12 +89,12 @@ class EmployeeControllerTest {
 				.andExpect(jsonPath("$.message", containsString("email: must be a well-formed email address")))
 				.andExpect(jsonPath("$.message", containsString("dob: must be a past date")));
 
-		verify(employeeService, never()).createEmployee(any(Employee.class));
+		verify(employeeService, never()).createEmployee(any(EmployeeTransferDTO.class));
 	}
 
 	@Test
 	void findAllEmployees() throws Exception {
-		List<Employee> employees = List.of(generateEmployee());
+		List<EmployeeResponse> employees = convert(List.of(generateEmployee()));
 		when(employeeService.findAllEmployees()).thenReturn(employees);
 
 		mockMvc.perform(get("/employee"))
@@ -105,7 +113,7 @@ class EmployeeControllerTest {
 
 	@Test
 	void findEmployee() throws Exception {
-		Employee newEmployee = generateEmployee();
+		EmployeeResponse newEmployee = convert(generateEmployee());
 
 		when(employeeService.findEmployeeByEmployeeNo(newEmployee.getEmployeeNo())).thenReturn(newEmployee);
 
@@ -125,13 +133,14 @@ class EmployeeControllerTest {
 
 	@Test
 	void createEmployee() throws Exception {
-		Employee newEmployee = generateEmployee();
+		EmployeeRequest employeeRequest = generateEmployeeRequest();
+		EmployeeResponse newEmployeeResponse = generateEmployeeResponse();
 
-		when(employeeService.createEmployee(any(Employee.class))).thenReturn(newEmployee);
+		when(employeeService.createEmployee(any(EmployeeTransferDTO.class))).thenReturn(newEmployeeResponse);
 
 		mockMvc.perform(post("/employee")
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(newEmployee)))
+					.content(objectMapper.writeValueAsString(employeeRequest)))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.employeeNo").value("BENIFEX-EMP-123"))
 				.andExpect(jsonPath("$.firstName").value("Alex"))
@@ -144,7 +153,7 @@ class EmployeeControllerTest {
 				.andExpect(header().exists(HttpHeaders.LOCATION))
 				.andExpect(header().string(HttpHeaders.LOCATION, endsWith("/employee/BENIFEX-EMP-123")));
 
-		verify(employeeService, times(1)).createEmployee(any(Employee.class));
+		verify(employeeService, times(1)).createEmployee(any(EmployeeTransferDTO.class));
 	}
 
 	@Test
@@ -155,20 +164,5 @@ class EmployeeControllerTest {
 				.andExpect(status().isNoContent());
 
 		verify(employeeService, times(1)).deleteEmployeeByEmployeeNo(employeeNo);
-	}
-
-	private Employee generateEmployee() {
-		LocalDate dob = LocalDate.of(1989, 10, 16);
-
-		Employee employee = new Employee();
-		employee.setEmployeeNo("BENIFEX-EMP-123");
-		employee.setAddress("123 Apple Street");
-		employee.setFirstName("Alex");
-		employee.setSurname("Green");
-		employee.setEmail("alex.green@benifex.com");
-		employee.setDob(dob);
-		employee.setGender("Male");
-		employee.setTitle("Sir");
-		return employee;
 	}
 }

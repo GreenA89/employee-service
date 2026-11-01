@@ -1,5 +1,7 @@
 package com.alex.green.benifex.test.employee_service.service;
 
+import com.alex.green.benifex.test.employee_service.dto.response.EmployeeResponse;
+import com.alex.green.benifex.test.employee_service.dto.transfer.EmployeeTransferDTO;
 import com.alex.green.benifex.test.employee_service.exception.DuplicateEmailAddressException;
 import com.alex.green.benifex.test.employee_service.exception.EmployeeNotFoundException;
 import com.alex.green.benifex.test.employee_service.model.Employee;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Locale;
 
+import static com.alex.green.benifex.test.employee_service.utils.EmployeeConverter.convert;
 import static com.alex.green.benifex.test.employee_service.utils.EmployeeUtils.createEmployeeNumber;
 
 @Service
@@ -24,7 +27,7 @@ public class EmployeeService {
 		this.employeeRepository = employeeRepository;
 	}
 
-	public Employee createEmployee(Employee employee) {
+	public EmployeeResponse createEmployee(EmployeeTransferDTO employee) {
 		String employeeNumber = createEmployeeNumber();
 		employee.setEmployeeNo(employeeNumber);
 
@@ -34,19 +37,21 @@ public class EmployeeService {
 		}
 
 		LOG.info("Creating employee with id: {}", employeeNumber);
-		return employeeRepository.save(employee);
+		Employee savedEmployee = employeeRepository.save(convert(employee));
+		return convert(savedEmployee);
 	}
 
-	public Employee findEmployeeByEmployeeNo(String employeeNo) {
-		if (!employeeRepository.existsById(employeeNo)) {
+	public EmployeeResponse findEmployeeByEmployeeNo(String employeeNo) {
+		Employee employee = employeeRepository.findById(employeeNo).orElse(null);
+		if (employee == null) {
 			LOG.warn("Employee with employeeNo {} not found", employeeNo);
 			throw new EmployeeNotFoundException(employeeNo);
 		}
-		return employeeRepository.findById(employeeNo).orElse(null);
+		return convert(employee);
 	}
 
-	public List<Employee> findAllEmployees() {
-		return employeeRepository.findAll();
+	public List<EmployeeResponse> findAllEmployees() {
+		return convert(employeeRepository.findAll());
 	}
 
 	public void deleteEmployeeByEmployeeNo(String employeeNo) {
