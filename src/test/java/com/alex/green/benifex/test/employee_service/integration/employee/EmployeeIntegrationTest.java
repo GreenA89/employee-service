@@ -47,10 +47,12 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 
 	@ParameterizedTest
 	@MethodSource("provideDuplicateEmailTestValues")
-	void shouldNotStoreEmployeeRecordWithDuplicateEmailAddress(String duplicateEmailAddress) {
+	void shouldNotStoreEmployeeRecordWithDuplicateEmailAddress(String initialEmailAddress, String duplicateEmailAddress) {
 		// GIVEN two new employee requests with the same email address
 		EmployeeRequest newEmployeeOne = generateEmployeeRequest();
+		newEmployeeOne.setEmail(initialEmailAddress);
 		EmployeeRequest newEmployeeTwo = generateEmployeeRequest();
+		newEmployeeTwo.setEmail(duplicateEmailAddress);
 
 		// WHEN the employee one record is successfully created
 		ResponseEntity<@NotNull EmployeeResponse> savedEmployeeOneResponse = restTemplate.postForEntity("/employee", newEmployeeOne, EmployeeResponse.class);
@@ -58,7 +60,6 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 
 		// AND an attempt is made to create a record for employee two with a duplicate email address
 		// THEN a duplicate email exception is thrown
-		newEmployeeTwo.setEmail(duplicateEmailAddress);
 		ResponseEntity<@NotNull String> savedEmployeeTwoResponse = restTemplate.postForEntity("/employee", newEmployeeTwo, String.class);
 		assertEquals(HttpStatus.CONFLICT, savedEmployeeTwoResponse.getStatusCode());
 
