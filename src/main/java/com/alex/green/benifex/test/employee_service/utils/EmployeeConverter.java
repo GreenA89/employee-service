@@ -30,7 +30,7 @@ public class EmployeeConverter {
 		employee.setEmployeeNo(employeeTransferDto.getEmployeeNo());
 		employee.setFirstName(employeeTransferDto.getFirstName());
 		employee.setSurname(employeeTransferDto.getSurname());
-		employee.setEmail(employeeTransferDto.getEmail());
+		employee.setEmail(employeeTransferDto.getEmail().toLowerCase());
 		employee.setTitle(employeeTransferDto.getTitle());
 		employee.setDob(employeeTransferDto.getDob());
 		employee.setGender(employeeTransferDto.getGender());

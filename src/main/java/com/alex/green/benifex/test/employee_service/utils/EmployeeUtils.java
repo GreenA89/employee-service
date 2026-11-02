@@ -1,7 +1,6 @@
 package com.alex.green.benifex.test.employee_service.utils;
 
 import java.util.UUID;
-import java.util.Locale;
 
 public class EmployeeUtils {
 

@@ -7,12 +7,15 @@ import com.alex.green.benifex.test.employee_service.model.Employee;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import tools.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployee;
 import static com.alex.green.benifex.test.employee_service.integration.utils.TestDataUtils.generateEmployeeRequest;
@@ -43,7 +46,7 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { "alex.green@benifex.com", "ALEX.GREEN@BENIFEX.COM" })
+	@MethodSource("provideDuplicateEmailTestValues")
 	void shouldNotStoreEmployeeRecordWithDuplicateEmailAddress(String duplicateEmailAddress) {
 		// GIVEN two new employee requests with the same email address
 		EmployeeRequest newEmployeeOne = generateEmployeeRequest();
@@ -78,5 +81,14 @@ public class EmployeeIntegrationTest extends AbstractIntegrationTestBase {
 		JsonNode responseBody = objectMapper.readTree(savedEmployeeResponse.getBody());
 		assertTrue(responseBody.get("message").asString().contains("email: must be a well-formed email address"));
 		assertTrue(responseBody.get("message").asString().contains("dob: must be a past date"));
+	}
+
+	static Stream<Arguments> provideDuplicateEmailTestValues() {
+		return Stream.of(
+				Arguments.of("alex.green@benifex.com", "alex.green@benifex.com"),
+				Arguments.of("alex.green@benifex.com", "ALEX.GREEN@BENIFEX.COM"),
+				Arguments.of("ALEX.GREEN@BENIFEX.com", "alex.green@benifex.com"),
+				Arguments.of("ALEX.GREEN@BENIFEX.com", "ALEX.GREEN@BENIFEX.COM")
+		);
 	}
 }
